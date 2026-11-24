@@ -1,0 +1,22 @@
+@extends('layouts.admin')
+@section('title', $i->number)
+@section('content')
+<a class="text-sm text-brand-700 underline" href="{{ route('admin.invoices.index') }}">← Invoices</a>
+<div class="mt-2 flex flex-wrap items-center justify-between gap-3"><h1 class="text-2xl font-bold">{{ $i->number }} <span class="ml-2 rounded-full bg-slate-200 px-2 py-0.5 text-xs uppercase">{{ $i->isOverdue() ? 'overdue' : $i->status }}</span> <span class="rounded-full bg-brand-100 px-2 py-0.5 text-xs">{{ $i->type === 'direct' ? 'Direct recruitment' : 'Subscription' }}</span></h1>
+<div class="flex gap-2">@if($i->status === 'draft' && $i->type === 'direct')<a class="rounded border bg-white px-3 py-2 text-sm" href="{{ route('admin.invoices.edit', $i) }}">Edit</a>@endif
+@if(in_array($i->status, ['draft', 'sent']))<form method="POST" action="{{ route('admin.invoices.send', $i) }}">@csrf<button class="rounded bg-brand-700 px-3 py-2 text-sm text-white">{{ $i->status === 'sent' ? 'Resend' : 'Send to client' }}</button></form>@endif
+@if(! $i->payments->count() && $i->status !== 'void')<form method="POST" action="{{ route('admin.invoices.void', $i) }}" onsubmit="return confirm('Void this invoice?')">@csrf<button class="rounded bg-red-50 px-3 py-2 text-sm text-red-700">Void</button></form>@endif</div></div>
+<div class="mt-4 grid gap-6 lg:grid-cols-3"><section class="rounded-xl bg-white p-5 text-sm lg:col-span-2">
+<p><b>Bill to:</b> {{ $i->bill_to_name }} · {{ $i->bill_to_email }}</p><p><b>Issued:</b> {{ $i->issue_date?->toDateString() ?? 'draft' }} · <b>Due:</b> {{ $i->due_date?->toDateString() ?? '—' }}</p>
+@if($i->request)<p><b>Request:</b> <a class="text-brand-700 underline" href="{{ route('admin.requests.show', $i->request) }}">{{ $i->request->reference }}</a></p>@endif
+@if($i->subscription)<p><b>Subscription:</b> <a class="text-brand-700 underline" href="{{ route('admin.subscriptions.show', $i->subscription) }}">{{ $i->subscription->organization->name }}</a> · period {{ $i->period_start?->toDateString() }} → {{ $i->period_end?->toDateString() }}</p>@endif
+<table class="mt-4 w-full"><thead class="text-left text-slate-500"><tr><th>Description</th><th>Qty</th><th>Unit</th><th class="text-right">Amount</th></tr></thead><tbody>
+@foreach($i->items as $it)<tr class="border-t"><td class="py-1">{{ $it->description }}</td><td>{{ $it->quantity + 0 }}</td><td>{{ number_format($it->unit_price, 2) }}</td><td class="text-right">{{ number_format($it->amount, 2) }}</td></tr>@endforeach</tbody>
+<tfoot><tr class="border-t"><td colspan="3" class="py-1 text-right">Subtotal</td><td class="text-right">{{ number_format($i->subtotal, 2) }}</td></tr><tr><td colspan="3" class="text-right">Tax ({{ $i->tax_rate + 0 }}%)</td><td class="text-right">{{ number_format($i->tax_total, 2) }}</td></tr><tr class="font-bold"><td colspan="3" class="text-right">Total ({{ $i->currency }})</td><td class="text-right">{{ number_format($i->total, 2) }}</td></tr></tfoot></table>
+@if($i->notes)<p class="mt-3 whitespace-pre-line text-slate-600">{{ $i->notes }}</p>@endif</section>
+<aside class="space-y-4"><section class="rounded-xl bg-white p-5 text-sm"><h2 class="font-semibold">Payments</h2><p class="text-slate-600">Paid {{ number_format($i->paidAmount(), 2) }} · Balance <b>{{ number_format($i->balance(), 2) }}</b> {{ $i->currency }}</p>
+@foreach($i->payments as $p)<p class="mt-2 border-t pt-2">{{ $p->paid_on->toDateString() }} · {{ number_format($p->amount, 2) }} · {{ $p->method }} {{ $p->reference ? '· '.$p->reference : '' }}<br><span class="text-xs text-slate-500">recorded by {{ $p->recorder?->name ?? 'system' }}</span></p>@endforeach</section>
+@if($i->status === 'sent')<form method="POST" action="{{ route('admin.payments.store', $i) }}" class="space-y-3 rounded-xl bg-white p-5">@csrf<h2 class="font-semibold">Record payment confirmation</h2>
+<x-field name="amount" label="Amount" type="number" step="0.01" :value="$i->balance()" required/><x-field name="method" label="Method" placeholder="Bank transfer, M-Pesa, card…" required/><x-field name="reference" label="Transaction reference"/><x-field name="paid_on" label="Date received" type="date" :value="now()->toDateString()" required/>
+<button class="rounded bg-brand-700 px-4 py-2 text-white">Record payment</button><p class="text-xs text-slate-500">Paying in full activates/renews subscriptions and moves direct requests to “Paid / In progress”.</p></form>@endif</aside></div>
+@endsection

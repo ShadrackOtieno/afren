@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 400" role="img" aria-label="Researcher with a laptop and an enumerator with a tablet">
+<rect width="520" height="400" rx="24" fill="__P100__"/>
+<circle cx="260" cy="200" r="150" fill="#f8fafc"/>
+<rect x="60" y="300" width="400" height="6" rx="3" fill="__P200__"/>
+<g><rect x="95" y="205" width="92" height="105" rx="40" fill="__P700__"/><circle cx="141" cy="170" r="30" fill="#c68b5e"/><path d="M111 164c4-26 50-26 60 0-14-8-46-8-60 0z" fill="#0f172a"/>
+<rect x="150" y="245" width="86" height="56" rx="6" fill="#1e293b"/><rect x="156" y="250" width="74" height="42" rx="3" fill="#f8fafc"/><rect x="164" y="260" width="40" height="5" rx="2" fill="__A500__"/><rect x="164" y="272" width="56" height="5" rx="2" fill="#cbd5e1"/></g>
+<g><rect x="300" y="200" width="96" height="110" rx="42" fill="__A500__"/><circle cx="348" cy="165" r="31" fill="#5a3825"/><path d="M316 160c6-28 54-28 64 0-18-8-46-8-64 0z" fill="#0f172a"/>
+<rect x="372" y="222" width="52" height="72" rx="8" fill="__P900__"/><rect x="377" y="228" width="42" height="56" rx="4" fill="#f8fafc"/><circle cx="398" cy="242" r="5" fill="__A300__"/><rect x="383" y="254" width="30" height="4" rx="2" fill="#cbd5e1"/><rect x="383" y="264" width="22" height="4" rx="2" fill="#cbd5e1"/></g>
+<path d="M260 60c-14 0-25 10-25 24 0 18 25 40 25 40s25-22 25-40c0-14-11-24-25-24z" fill="__A300__"/><circle cx="260" cy="84" r="8" fill="#f8fafc"/>
+</svg>
